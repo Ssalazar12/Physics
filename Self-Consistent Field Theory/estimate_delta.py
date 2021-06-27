@@ -28,10 +28,13 @@ L = 2*Re
 X = np.linspace(0,Nx, Nx)
 X = X*L/Nx
 
-d = (X[1]-X[0])*7
-
+# number of polymers 
+N_polymers = 80
 # number of montecalo steps
-N_montecarlo = 10_000
+N_montecarlo = 2000
+dd = (X[1]-X[0])
+delta_var = [dd*5,dd*10,dd*15, dd*20, dd*40]
+
 turn_of_fields = True
 
 # ---------------------------------------
@@ -107,88 +110,103 @@ def metropolis_step(d_u, prev_chain, proposed_chain):
     return next_chain, accepted
 
 
-# ---------------------------------------
+# -----------------------------------------------------------------------------------------
 # MAIN
-# ----------------------------------------
-
-initial_chain = np.random.rand(N,3) * L
-
+# -----------------------------------------------------------------------------------------
 
 # interpolation of the fields
 wa_int = interp1d(X,wa, kind='linear')
 wb_int = interp1d(X,wb, kind='linear')
 
 
-# save for each step
-accept_ratios = []
-# energy
-delta_u_list = []
-u_list = []
-# positions
-montecarlo_chains = []
 
-# meassure time taken
-start = time.time()
-print("Starting")
+# save the center of mass data for each delta
+delta_list = []
 
-current_chain = initial_chain.copy()
+for  d in delta_var:
+    print(d)
+    # center of mass data
+    cm_list = []
 
-for j in range(N_montecarlo):
-    acceptance_list = np.zeros(Nx)
-    current_u = 0
-    # one montecarlo step
-    for i in range(0,Nx):
-        next_chain, bead_i = move_bead(current_chain,d)
-        # if the displacement takes the bead out of the box then we reject the move immediately
-        if all((y <= L) and (y>=0) for y in next_chain[bead_i]):
-            # calculate initial and final energies
-            u0,sumwa0, sumwb0, sum0 = calculate_energy(current_chain,no_fields=turn_of_fields)
-            uf,sumwaf, sumwbf, sumf = calculate_energy(next_chain,no_fields=turn_of_fields)
+    for k in range(0, N_polymers):
 
-            delta_u = uf-u0
+        initial_chain = np.random.rand(N,3) * L
+        current_chain = initial_chain.copy()
 
-            # metropolis step 
-            current_chain, acceptance_list[i] = metropolis_step(delta_u, current_chain, next_chain)
-            
-            if acceptance_list[i] == 0:
-                delta_u = 0
-                current_u = u0
+        # meassure time taken
+        start = time.time()
+        print("Starting")
 
-            else:
-                current_u = uf
+        for j in range(N_montecarlo):
+            acceptance_list = np.zeros(Nx)
+            current_u = 0
+            # one montecarlo step
+            for i in range(0,Nx):
+                next_chain, bead_i = move_bead(current_chain,d)
+                # if the displacement takes the bead out of the box then we reject the move immediately
+                if all((y <= L) and (y>=0) for y in next_chain[bead_i]):
+                    # calculate initial and final energies
+                    u0,sumwa0, sumwb0, sum0 = calculate_energy(current_chain,no_fields=turn_of_fields)
+                    uf,sumwaf, sumwbf, sumf = calculate_energy(next_chain,no_fields=turn_of_fields)
 
+                    delta_u = uf-u0
+
+                    # metropolis step 
+                    current_chain, acceptance_list[i] = metropolis_step(delta_u, current_chain, next_chain)
+                    
+                    if acceptance_list[i] == 0:
+                        delta_u = 0
+                        current_u = u0
+                        
+                    else:
+                        current_u = uf
+
+                        
+                # reject the move if the bead goes out of the box
+                else:
+                    delta_u = 0
+                    current_u = u0
+
+            # calculate the center of mass data for each monte carlo step
+            current_cm = (1/N)*np.sum(current_chain,axis=0)
+            cm_list.append(current_cm)
+
+        #current_jp = (1/2)*( current_chain[int(N*F-1),:] + current_chain[int(N*F),:] )
+        #jp_list.append(current_jp)
+        print('-------------------------------------------')
+        print('next polymer')
+        print('-------------------------------------------')
+
+                    
+        # save current chain positions
+        #montecarlo_chains.append(current_chain)
+    delta_list.append(list(cm_list))
+        
+
+    print('-------------------------------------------')
+    print('next delta')
+    print('-------------------------------------------')
                 
-        # reject the move if the bead goes out of the box
-        else:
-            delta_u = 0
-            current_u = u0
-            
-    # save data
-    acceptance_ratio = np.sum(acceptance_list)/len(acceptance_list)
-    accept_ratios.append(acceptance_ratio)
-    delta_u_list.append(delta_u)
-    montecarlo_chains.append(current_chain)
-    
-    # save current energy
-    u_list.append(current_u)
-            
-    # print the time yo look at something while it iterates
-    if(j%100==0):
-        now = time.time()
-        print("{0} seconds since the loop started".format(now - start), " and ", j+1, "iterations")
 
 end = time.time()
 print(end - start)
 
 # save the data
-np.savetxt('acceptance_ratio_40.csv', accept_ratios, delimiter=',')
-np.savetxt('energy_changes_40.csv', delta_u_list, delimiter=',')
-np.savetxt('energy_convergence_40.csv', u_list, delimiter=',')
+#np.savetxt('delta_energy_convergence_polymers.csv', u_list, delimiter=',')
 
-# save the montecarlo chains
-output = open('montecarlo_chains_40.pkl', 'wb')
-pickle.dump(montecarlo_chains, output)
+
+# save the montecarlo chains and cm an jp positions
+#output = open('delta_montecarlo_chains_polymers.pkl', 'wb')
+#pickle.dump(montecarlo_chains, output)
+#output.close()
+
+output = open('delta_center_masses.pkl', 'wb')
+pickle.dump(delta_list, output)
 output.close()
+
+#output = open('delta_junction_points.pkl', 'wb')
+#pickle.dump(jp_list, output)
+#output.close()
 
 
 

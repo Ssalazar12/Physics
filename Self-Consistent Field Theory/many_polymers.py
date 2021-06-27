@@ -10,7 +10,7 @@ wa = np.loadtxt('w_a.csv', delimiter=',')
 wb = np.loadtxt('w_b.csv', delimiter=',')
 
 # set up a seed to repeat experiments
-np.random.RandomState(seed=111)
+#np.random.RandomState(seed=111)
 
 # ----------------------
 # Global Constants------
@@ -29,12 +29,12 @@ X = np.linspace(0,Nx, Nx)
 X = X*L/Nx
 
 
-d = (X[1]-X[0])*9
+d = (X[1]-X[0])*7
 
 # number of polymers 
 N_polymers = 128
 # number of montecalo steps
-N_montecarlo = 3000
+N_montecarlo = 3500
 turn_of_fields = False
 
 # ---------------------------------------
