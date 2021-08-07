@@ -262,7 +262,7 @@ quark_isospin = np.asarray([T3u,T3u,T3e,T3e,T3e])
 #---------------------------------------------------------------------------------------------------------------------
 
 benchmark_value = 42_250
-N_montecarlo = 5*10**6
+N_montecarlo = 5*10**5
 s0 = Mz**2
 
 # perform the integration
@@ -310,7 +310,7 @@ plt.savefig('figures/montecarlo_fixed_s.png')
 #---------------------------------------------------------------------------------------------------------------------
 
 benchmark_value = 9880
-N_montecarlo = 5*10**6
+N_montecarlo = 5*10**5
 
 sigma_eval_0, sigma_res, montecarlo_uncertainty, error,s_0 = \
                           montecarlo_cross_section(N_montecarlo, benchmark_value, s0 ,constant_s=False )
@@ -357,10 +357,12 @@ for n in N_list:
     sigma_list.append(sigma_res)
     uncertainty_list.append(montecarlo_uncertainty)
     error_list.append(error)
+
+uniform_error = error_list.copy()
     
 plt.figure(figsize=(22,6))
 plt.tight_layout()
-plt.suptitle('Scattering for Fixed $s$')
+plt.suptitle('Scattering for Unifrom $s$')
 
 plt.subplot(1,2,1)
 plt.loglog(N_list, error_list)
@@ -406,7 +408,7 @@ plt.savefig('figures/vegas_fig.png')
 # IMPORTANCE SAMPLING CROSS SECTION
 #---------------------------------------------------------------------------------------------------------------------
 
-N_montecarlo = 10**6
+N_montecarlo = 10**5
 benchmark_value = 9880
 
 s, fs, costh, phi, Aq_array, Vq_array, charge_sequence, \
@@ -458,10 +460,12 @@ for n in N_list:
 
 plt.figure(figsize=(22,6))
 plt.tight_layout()
-plt.suptitle('Scattering for Fixed $s$')
+plt.suptitle('Importance Sampling $s$')
 
 plt.subplot(1,2,1)
-plt.loglog(N_list, error_list)
+plt.loglog(N_list, error_list, label='Importance sampling', linestyle='dashed')
+plt.loglog(N_list, uniform_error, label='Normal montecarlo')
+plt.legend()
 plt.xlabel('$t_{max}$')
 plt.ylabel('Error (pb)')
 
