@@ -9,7 +9,7 @@ import itertools as it
 
 from utils import alphas, particle, vector, shower, analysis, yoda
 
-matplotlib.rcParams.update({'font.size': 17})
+matplotlib.rcParams.update({'font.size': 19})
 sns.set_style("white")
 
 #---------------------------------------------------------------------------------------------------------------------
@@ -287,12 +287,14 @@ for n in N_list:
     uncertainty_list.append(montecarlo_uncertainty)
     error_list.append(error)
     
-plt.figure(figsize=(22,6))
+plt.figure(figsize=(23,8))
 plt.tight_layout()
 plt.suptitle('Scattering for Fixed $s$')
 
 plt.subplot(1,2,1)
 plt.loglog(N_list, error_list)
+plt.loglog(N_list, uncertainty_list, color = 'red',label='uncertainty')
+plt.legend()
 plt.xlabel('$t_{max}$')
 plt.ylabel('Error (pb)')
 
@@ -335,11 +337,11 @@ f_s = 1.0/((Mz + 3*Gammaz)**2-(Mz - 3*Gammaz)**2)
 hist, bin_edges = np.histogram(np.sqrt(s_0), weights=sigma_eval_0, bins=40)
 hist = (hist*1/f_s)*20*10**5
 
-plt.figure(figsize=(10,6))
+plt.figure(figsize=(11,7))
 plt.title('Weighted Histogram of $s$')
 plt.bar(bin_edges[:-1], hist, width = 0.5)
 plt.plot(np.sqrt(s_array),sigma_s, color='orange', linewidth=4, label='fixed s')
-plt.xlabel("$\sqrt{s} \;\; [GeV^2]$")
+plt.xlabel("$\sqrt{s} \;\; [GeV]$")
 plt.legend()
 
 plt.savefig('figures/s_histogram.png')
@@ -360,12 +362,14 @@ for n in N_list:
 
 uniform_error = error_list.copy()
     
-plt.figure(figsize=(22,6))
+plt.figure(figsize=(23,8))
 plt.tight_layout()
 plt.suptitle('Scattering for Unifrom $s$')
 
 plt.subplot(1,2,1)
 plt.loglog(N_list, error_list)
+plt.loglog(N_list, uncertainty_list, color = 'red',label='uncertainty')
+plt.legend()
 plt.xlabel('$t_{max}$')
 plt.ylabel('Error (pb)')
 
@@ -401,6 +405,8 @@ print('benchmark value = ' , 9880 )
 integrator.map.show_grid(30,plotter=plt)
 
 plt.title('Vegas Integration Grid')
+plt.xlabel(r'$ s \;[GeV^2]$')
+plt.ylabel(r'$cos(\theta)$')
 plt.tight_layout()
 plt.savefig('figures/vegas_fig.png')
 
@@ -408,7 +414,7 @@ plt.savefig('figures/vegas_fig.png')
 # IMPORTANCE SAMPLING CROSS SECTION
 #---------------------------------------------------------------------------------------------------------------------
 
-N_montecarlo = 10**5
+N_montecarlo = 5*10**5
 benchmark_value = 9880
 
 s, fs, costh, phi, Aq_array, Vq_array, charge_sequence, \
@@ -458,12 +464,13 @@ for n in N_list:
     uncertainty_list.append(importance_uncert)
     error_list.append(error)
 
-plt.figure(figsize=(22,6))
+plt.figure(figsize=(23,8))
 plt.tight_layout()
 plt.suptitle('Importance Sampling $s$')
 
 plt.subplot(1,2,1)
 plt.loglog(N_list, error_list, label='Importance sampling', linestyle='dashed')
+plt.loglog(N_list, uncertainty_list, color = 'red',label='uncertainty')
 plt.loglog(N_list, uniform_error, label='Normal montecarlo')
 plt.legend()
 plt.xlabel('$t_{max}$')
@@ -488,20 +495,20 @@ alpha_s = alphas.AlphaS(Mz, Alpha_mz)
 coupling0_array = np.asarray([alpha_s.as0(t) for t in ts_array])
 coupling1_array = np.asarray([alpha_s.as1(t) for t in ts_array])
 
-plt.figure(figsize=(13.5,6))
+plt.figure(figsize=(15.5,8))
 plt.suptitle('Coupling Constant Scale Dependence')
 plt.tight_layout()
 plt.subplot(1,2,1)
 plt.plot(ts_array,coupling0_array)
 plt.xscale('log')
 plt.ylabel(r"$\alpha_0$")
-plt.xlabel(r"$t \;\; [GeV^2]$")
+plt.xlabel(r"$t_p \;\; [GeV^2]$")
 
 plt.subplot(1,2,2)
 plt.plot(ts_array,coupling1_array)
 plt.xscale('log')
 plt.ylabel(r"$\alpha_1$")
-plt.xlabel(r"$t \;\; [GeV^2]$")
+plt.xlabel(r"$t_p \;\; [GeV^2]$")
 plt.savefig('figures/coupling_as_t.png')
 
 N_montecarlo = 1000
@@ -573,7 +580,7 @@ av_particle_count = np.sum(np.asarray(particle_count) * np.asarray(differential_
 print('Average Final State Particle Count: ', av_particle_count)
 print('mean of the weights: ' , np.mean(differential_sigma))
 
-plt.figure(figsize=(10,6))
+plt.figure(figsize=(11,7))
 plt.title('Final Sate Distribution')
 plt.hist(particle_count);
 plt.xlabel('Number of Final State Particles')
