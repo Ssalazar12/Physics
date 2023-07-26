@@ -1,5 +1,4 @@
-# Movies for The supplementary material of "Robustness of travelling states in generic non-reciprocal
-mixtures"
+# Movies for The supplementary material of "Robustness of travelling states in generic non-reciprocal mixtures"
 
 - movie1: Corresponds to a system with parameters $R_{in} = 22$, $D_0 = 0.01$, $\rho = 0.1$, $V_{AA} = 1.0$, $V_{BB} = 0.0$ . 
 - R1_movie1: Corresponds to Figure R1 in the predator prey regime $\delta =-1.5$ for the case of Solid chasing Gas:  $V_{AA}=0.0$, $V_{BB}=1.0$ .
