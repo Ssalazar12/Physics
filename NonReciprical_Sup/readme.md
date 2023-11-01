@@ -8,3 +8,4 @@
 - R6_movie1: Corresponds to a system in quasi 1-D,  with Periodic boundaries in the horizontal direction and fixed boundaries with size $L_0=15$ in the vertical direction. The paramenters are $\delta = 0.9$ and $D_0=0.01$
 - R6_movie2: Corresponds to a system in quasi 1-D,  with Periodic boundaries in the horizontal direction and fixed boundaries with size $L_0=22$ in the vertical direction. The paramenters are $\delta = 0.9$ and $D_0=0.01$
 - R6_movie3: Corresponds to a system in quasi 1-D,  with Periodic boundaries in the horizontal direction and fixed boundaries with size $L_0=35$ in the vertical direction. The paramenters are $\delta = 0.9$ and $D_0=0.01$
+- R7_movie: Compares a system with annular confinement with is equivalent in quasi-1D.
